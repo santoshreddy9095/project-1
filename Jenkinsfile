@@ -3,56 +3,43 @@ pipeline {
 
     tools {
         jdk 'jdk17'
-        maven 'maven'
+	maven 'maven'
     }
 
     stages {
 
-        stage('Build & Test') {
+        stage('Checkout Code') {
             steps {
-                dir('project-1') {
-                    sh 'mvn clean test'
-                }
+                git branch: 'main',
+                    url: 'https://github.com/santoshreddy9095/project-1.git'
             }
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                dir('project-1') {
+    	    steps {
+        	dir('project-1') {
                     withSonarQubeEnv('sonarqube') {
-                        sh """
-                        sonar-scanner \
-                        -Dsonar.projectKey=project-1 \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target
-                        """
-                    }
-                }
+                        sh 'mvn clean verify sonar:sonar'
+            	    }
+       	        }
             }
         }
 
-        stage('Package') {
+        stage('Build with Maven') {
             steps {
                 dir('project-1') {
-                    sh 'mvn package -DskipTests'
+                    sh 'mvn clean package'
                 }
             }
-        }
+         }
 
         stage('Archive Artifact') {
             steps {
-                archiveArtifacts artifacts: 'project-1/target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
     }
-
-    post {
-        failure {
-            echo '❌ Build failed'
-        }
-        success {
-            echo '✅ Build succeeded'
-        }
-    }
 }
+
+
 
