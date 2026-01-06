@@ -17,10 +17,12 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh 'mvn clean verify sonar:sonar'
-                }
+    	    steps {
+        	dir('project-1') {
+                    withSonarQubeEnv('sonarqube') {
+                        sh 'mvn clean verify sonar:sonar'
+            	    }
+       	        }
             }
         }
 
@@ -37,6 +39,5 @@ pipeline {
         }
     }
 }
-
 
 
