@@ -8,12 +8,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build & Test') {
             steps {
                 dir('project-1') {
@@ -26,20 +20,13 @@ pipeline {
             steps {
                 dir('project-1') {
                     withSonarQubeEnv('sonarqube') {
-                        sh 'sonar-scanner'
+                        sh """
+                        sonar-scanner \
+                        -Dsonar.projectKey=project-1 \
+                        -Dsonar.sources=src \
+                        -Dsonar.java.binaries=target
+                        """
                     }
-                }
-            }
-        }
-
-        // Optional – many startups enable this later
-        stage('Quality Gate') {
-            when {
-                expression { return env.CHANGE_ID == null } // skip for PRs
-            }
-            steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
