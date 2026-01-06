@@ -37,10 +37,13 @@ pipeline {
          }
 
         stage('Archive Artifact') {
-            steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-            }
-        }
+    	    steps {
+                dir('project-1') {
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+        	}
+    	    }
+	}
+
     }
 }
 
