@@ -28,9 +28,11 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                dir('project-1') {
+                    sh 'mvn clean package'
+                }
             }
-        }
+         }
 
         stage('Archive Artifact') {
             steps {
@@ -39,5 +41,6 @@ pipeline {
         }
     }
 }
+
 
 
